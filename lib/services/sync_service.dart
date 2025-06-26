@@ -18,7 +18,7 @@ class SyncService {
     
     for (var survey in pendingSurveys) {
       try {
-        // TODO: Implementar la llamada a la API para enviar los datos
+        // TO DO: Implementar la llamada a la API para enviar los datos
         // await apiService.sendSurvey(survey);
         
         await StorageService.markSurveyAsSynced(survey['id']);

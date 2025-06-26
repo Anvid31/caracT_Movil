@@ -14,12 +14,14 @@ Aplicación Flutter para caracterización de sedes educativas CENS (Centros Educ
 ## 🚀 Instalación y Configuración
 
 ### 1. Clonar el repositorio
+
 ```bash
 git clone https://github.com/KENSHIN11083012/caracT_Movil.git
 cd caracT_Movil
 ```
 
 ### 2. Instalar dependencias
+
 ```bash
 flutter pub get
 ```
@@ -29,11 +31,13 @@ flutter pub get
 **Para seguridad, las credenciales de correo se manejan con variables de entorno:**
 
 1. Copie el archivo de ejemplo:
+
    ```bash
    cp .env.example .env
    ```
 
 2. Edite el archivo `.env` con sus credenciales reales:
+
    ```env
    DESTINATION_EMAIL=tu_correo_destino@gmail.com
    SENDER_EMAIL=tu_cuenta_gmail@gmail.com
@@ -47,6 +51,7 @@ flutter pub get
    - Use esa contraseña en `SENDER_PASSWORD` (NO su contraseña normal)
 
 ### 4. Ejecutar la aplicación
+
 ```bash
 flutter run
 ```
@@ -60,7 +65,6 @@ flutter run
 
 ## 📁 Estructura del Proyecto
 
-```
 lib/
 ├── config/           # Configuraciones (temas, email)
 ├── models/           # Modelos de datos
@@ -69,7 +73,6 @@ lib/
 ├── views/            # Páginas de la aplicación
 ├── widgets/          # Widgets reutilizables
 └── main.dart         # Punto de entrada
-```
 
 ## 🛠️ Tecnologías Utilizadas
 

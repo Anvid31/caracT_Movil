@@ -31,7 +31,7 @@ class EmailService {
       );
 
       final message = Message()
-        ..from = const Address(EmailConfig.senderEmail, EmailConfig.senderName)
+        ..from = Address(EmailConfig.senderEmail, EmailConfig.senderName)
         ..recipients.add(EmailConfig.destinationEmail)
         ..subject = 'Caracterización de Sede Educativa - ${institutionName ?? 'Sede'} - ${municipio ?? ''}'
         ..text = _generateEmailBody(institutionName, municipio)
