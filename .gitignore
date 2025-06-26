@@ -43,3 +43,12 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Environment variables - NUNCA subir credenciales
+.env
+.env.local
+.env.production
+.env.staging
+
+# Archivos de configuración privada
+/lib/config/private_config.dart
