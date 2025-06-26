@@ -1,7 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <paths xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Acceso a archivos externos de la app -->
     <external-files-path name="external_files" path="."/>
+    
+    <!-- Cache de la app -->
     <cache-path name="cache" path="."/>
     <external-cache-path name="external_cache" path="."/>
+    
+    <!-- Archivos internos de la app -->
     <files-path name="files" path="."/>
+    
+    <!-- Directorio de imágenes para captura -->
+    <external-files-path name="images" path="Pictures"/>
+    <external-cache-path name="image_cache" path="Pictures"/>
+    
+    <!-- Compatibilidad con diferentes directorios de almacenamiento -->
+    <external-path name="external_storage" path="."/>
+    <root-path name="root" path="."/>
 </paths>

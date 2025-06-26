@@ -63,6 +63,29 @@ class _ElectricityFormPageState extends State<ElectricityFormPage> {
           );
         }
         
+        // Validar que si tiene servicio eléctrico, haya seleccionado el tipo
+        if (_electricityInfo.hasElectricService == true && 
+            (_electricityInfo.electricServiceType == null || _electricityInfo.electricServiceType!.isEmpty)) {
+          isValid = false;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Row(
+                children: [
+                  Icon(Icons.warning, color: Colors.white),
+                  SizedBox(width: 8),
+                  Text('Por favor, indique de qué manera recibe servicio eléctrico'),
+                ],
+              ),
+              backgroundColor: Colors.orange.shade600,
+              behavior: SnackBarBehavior.floating,
+              margin: const EdgeInsets.all(16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+          );
+        }
+        
         if (_electricityInfo.interestedInSolarPanels == null) {
           isValid = false;
           ScaffoldMessenger.of(context).showSnackBar(
@@ -167,11 +190,21 @@ class _ElectricityFormPageState extends State<ElectricityFormPage> {
                   onChanged: (value) {
                     setState(() {
                       _electricityInfo.hasElectricService = value;
+                      // Si selecciona "No", limpiar el tipo de servicio
+                      if (value == false) {
+                        _electricityInfo.electricServiceType = null;
+                      }
                     });
                   },
                   yesLabel: 'Sí, tiene servicio eléctrico',
                   noLabel: 'No, no tiene servicio eléctrico',
                 ),
+
+                // Pregunta condicionada - Tipo de servicio eléctrico
+                if (_electricityInfo.hasElectricService == true) ...[
+                  const SizedBox(height: 16),
+                  _buildElectricServiceTypeCard(),
+                ],
 
                 const SizedBox(height: 24),
                 
@@ -179,7 +212,7 @@ class _ElectricityFormPageState extends State<ElectricityFormPage> {
                 _buildQuestionCard(
                   icon: Icons.solar_power,
                   iconColor: Colors.orange,
-                  question: '¿Le interesaría instalar paneles solares en su vivienda?',
+                  question: '¿Le interesaría instalar paneles solares en la escuela?',
                   value: _electricityInfo.interestedInSolarPanels,
                   onChanged: (value) {
                     setState(() {
@@ -423,6 +456,184 @@ class _ElectricityFormPageState extends State<ElectricityFormPage> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildElectricServiceTypeCard() {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            offset: const Offset(0, 2),
+            blurRadius: 8,
+            spreadRadius: 0,
+          ),
+        ],
+        border: Border.all(
+          color: Colors.grey.withValues(alpha: 0.1),
+          width: 1,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header de la pregunta
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.blue.withValues(alpha: 0.05),
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(16),
+                topRight: Radius.circular(16),
+              ),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.blue.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Icon(
+                    Icons.settings_input_composite,
+                    color: Colors.blue,
+                    size: 20,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                const Expanded(
+                  child: Text(
+                    '¿De qué manera recibe servicio eléctrico la sede?',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFF2E2E2E),
+                      height: 1.3,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          
+          // Opciones de respuesta
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              children: [
+                _buildServiceTypeOption(
+                  'Red eléctrica nacional',
+                  Icons.power_outlined,
+                  'Red eléctrica nacional',
+                ),
+                const SizedBox(height: 8),
+                _buildServiceTypeOption(
+                  'Generador eléctrico (Diesel/Gasolina)',
+                  Icons.local_gas_station,
+                  'Generador eléctrico',
+                ),
+                const SizedBox(height: 8),
+                _buildServiceTypeOption(
+                  'Sistema solar',
+                  Icons.wb_sunny,
+                  'Sistema solar',
+                ),
+                const SizedBox(height: 8),
+                _buildServiceTypeOption(
+                  'Otro',
+                  Icons.more_horiz,
+                  'Otro',
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildServiceTypeOption(String label, IconData icon, String value) {
+    final isSelected = _electricityInfo.electricServiceType == value;
+    
+    return Container(
+      margin: const EdgeInsets.only(bottom: 4),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: isSelected 
+              ? Colors.blue 
+              : Colors.grey.shade300,
+          width: isSelected ? 2 : 1,
+        ),
+        color: isSelected 
+            ? Colors.blue.withValues(alpha: 0.05)
+            : Colors.white,
+      ),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        onTap: () {
+          setState(() {
+            _electricityInfo.electricServiceType = value;
+          });
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              Container(
+                width: 20,
+                height: 20,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: isSelected 
+                        ? Colors.blue 
+                        : Colors.grey.shade400,
+                    width: 2,
+                  ),
+                  color: isSelected 
+                      ? Colors.blue 
+                      : Colors.white,
+                ),
+                child: isSelected
+                    ? const Icon(
+                        Icons.check,
+                        size: 12,
+                        color: Colors.white,
+                      )
+                    : null,
+              ),
+              const SizedBox(width: 12),
+              Icon(
+                icon,
+                color: isSelected 
+                    ? Colors.blue 
+                    : Colors.grey.shade400,
+                size: 20,
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: isSelected 
+                        ? FontWeight.w600 
+                        : FontWeight.w500,
+                    color: isSelected 
+                        ? Colors.blue.shade700 
+                        : Colors.grey.shade700,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

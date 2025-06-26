@@ -1,3 +1,4 @@
 {
-    "dart.flutterSdkPath": "~/dev/flutter"
+    "dart.flutterSdkPath": "~/develop/flutter",
+    "cmake.sourceDirectory": "C:/Users/mendo/OneDrive/Documents/Proyectos 2025/caracT_Movil/windows"
 }

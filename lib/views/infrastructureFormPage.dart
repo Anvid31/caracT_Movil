@@ -471,21 +471,70 @@ class _InfrastructureFormPageState extends State<InfrastructureFormPage> {
       }
     }
 
+    int getQuantity() {
+      switch (space['key']) {
+        case 'hasSalones': return infrastructureInfo.cantidadSalones;
+        case 'hasComedor': return infrastructureInfo.cantidadComedor;
+        case 'hasCocina': return infrastructureInfo.cantidadCocina;
+        case 'hasSalonReuniones': return infrastructureInfo.cantidadSalonReuniones;
+        case 'hasHabitaciones': return infrastructureInfo.cantidadHabitaciones;
+        case 'hasBanos': return infrastructureInfo.cantidadBanos;
+        case 'hasOtros': return infrastructureInfo.cantidadOtros;
+        default: return 0;
+      }
+    }
+
     void setValue(bool value) {
       setState(() {
         switch (space['key']) {
-          case 'hasSalones': infrastructureInfo.hasSalones = value; break;
-          case 'hasComedor': infrastructureInfo.hasComedor = value; break;
-          case 'hasCocina': infrastructureInfo.hasCocina = value; break;
-          case 'hasSalonReuniones': infrastructureInfo.hasSalonReuniones = value; break;
-          case 'hasHabitaciones': infrastructureInfo.hasHabitaciones = value; break;
-          case 'hasBanos': infrastructureInfo.hasBanos = value; break;
-          case 'hasOtros': infrastructureInfo.hasOtros = value; break;
+          case 'hasSalones': 
+            infrastructureInfo.hasSalones = value;
+            if (!value) infrastructureInfo.cantidadSalones = 0;
+            break;
+          case 'hasComedor': 
+            infrastructureInfo.hasComedor = value;
+            if (!value) infrastructureInfo.cantidadComedor = 0;
+            break;
+          case 'hasCocina': 
+            infrastructureInfo.hasCocina = value;
+            if (!value) infrastructureInfo.cantidadCocina = 0;
+            break;
+          case 'hasSalonReuniones': 
+            infrastructureInfo.hasSalonReuniones = value;
+            if (!value) infrastructureInfo.cantidadSalonReuniones = 0;
+            break;
+          case 'hasHabitaciones': 
+            infrastructureInfo.hasHabitaciones = value;
+            if (!value) infrastructureInfo.cantidadHabitaciones = 0;
+            break;
+          case 'hasBanos': 
+            infrastructureInfo.hasBanos = value;
+            if (!value) infrastructureInfo.cantidadBanos = 0;
+            break;
+          case 'hasOtros': 
+            infrastructureInfo.hasOtros = value;
+            if (!value) infrastructureInfo.cantidadOtros = 0;
+            break;
+        }
+      });
+    }
+
+    void setQuantity(int quantity) {
+      setState(() {
+        switch (space['key']) {
+          case 'hasSalones': infrastructureInfo.cantidadSalones = quantity; break;
+          case 'hasComedor': infrastructureInfo.cantidadComedor = quantity; break;
+          case 'hasCocina': infrastructureInfo.cantidadCocina = quantity; break;
+          case 'hasSalonReuniones': infrastructureInfo.cantidadSalonReuniones = quantity; break;
+          case 'hasHabitaciones': infrastructureInfo.cantidadHabitaciones = quantity; break;
+          case 'hasBanos': infrastructureInfo.cantidadBanos = quantity; break;
+          case 'hasOtros': infrastructureInfo.cantidadOtros = quantity; break;
         }
       });
     }
 
     final isSelected = getValue();
+    final quantity = getQuantity();
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
@@ -501,62 +550,195 @@ class _InfrastructureFormPageState extends State<InfrastructureFormPage> {
             ? Colors.green.withValues(alpha: 0.05)
             : Colors.white,
       ),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(12),
-        onTap: () => setValue(!isSelected),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            children: [
-              Container(
-                width: 20,
-                height: 20,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(4),
-                  border: Border.all(
+      child: Column(
+        children: [
+          InkWell(
+            borderRadius: BorderRadius.circular(12),
+            onTap: () => setValue(!isSelected),
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                children: [
+                  Container(
+                    width: 20,
+                    height: 20,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(4),
+                      border: Border.all(
+                        color: isSelected 
+                            ? Colors.green 
+                            : Colors.grey.shade400,
+                        width: 2,
+                      ),
+                      color: isSelected 
+                          ? Colors.green 
+                          : Colors.white,
+                    ),
+                    child: isSelected
+                        ? const Icon(
+                            Icons.check,
+                            size: 12,
+                            color: Colors.white,
+                          )
+                        : null,
+                  ),
+                  const SizedBox(width: 12),
+                  Icon(
+                    space['icon'],
                     color: isSelected 
                         ? Colors.green 
                         : Colors.grey.shade400,
-                    width: 2,
+                    size: 20,
                   ),
-                  color: isSelected 
-                      ? Colors.green 
-                      : Colors.white,
-                ),
-                child: isSelected
-                    ? const Icon(
-                        Icons.check,
-                        size: 12,
-                        color: Colors.white,
-                      )
-                    : null,
-              ),
-              const SizedBox(width: 12),
-              Icon(
-                space['icon'],
-                color: isSelected 
-                    ? Colors.green 
-                    : Colors.grey.shade400,
-                size: 20,
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  space['title'],
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: isSelected 
-                        ? FontWeight.w600 
-                        : FontWeight.w500,
-                    color: isSelected 
-                        ? Colors.green.shade700 
-                        : Colors.grey.shade700,
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      space['title'],
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: isSelected 
+                            ? FontWeight.w600 
+                            : FontWeight.w500,
+                        color: isSelected 
+                            ? Colors.green.shade700 
+                            : Colors.grey.shade700,
+                      ),
+                    ),
                   ),
-                ),
+                ],
               ),
-            ],
+            ),
           ),
-        ),
+          
+          // Campo de cantidad - aparece cuando está seleccionado
+          if (isSelected) ...[
+            Container(
+              width: double.infinity,
+              height: 1,
+              color: Colors.green.withValues(alpha: 0.2),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                children: [
+                  const SizedBox(width: 32), // Alineación con el contenido superior
+                  Icon(
+                    Icons.numbers,
+                    color: Colors.green.shade600,
+                    size: 16,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Cantidad:',
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.green.shade700,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Container(
+                      height: 40,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: Colors.green.shade300,
+                          width: 1,
+                        ),
+                        color: Colors.white,
+                      ),
+                      child: Row(
+                        children: [
+                          // Botón disminuir
+                          InkWell(
+                            onTap: quantity > 0 ? () => setQuantity(quantity - 1) : null,
+                            borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(8),
+                              bottomLeft: Radius.circular(8),
+                            ),
+                            child: Container(
+                              width: 40,
+                              height: 40,
+                              decoration: BoxDecoration(
+                                color: quantity > 0 
+                                    ? Colors.green.withValues(alpha: 0.1)
+                                    : Colors.grey.withValues(alpha: 0.1),
+                                borderRadius: const BorderRadius.only(
+                                  topLeft: Radius.circular(8),
+                                  bottomLeft: Radius.circular(8),
+                                ),
+                              ),
+                              child: Icon(
+                                Icons.remove,
+                                size: 16,
+                                color: quantity > 0 
+                                    ? Colors.green.shade600
+                                    : Colors.grey.shade400,
+                              ),
+                            ),
+                          ),
+                          
+                          // Campo numérico
+                          Expanded(
+                            child: Container(
+                              alignment: Alignment.center,
+                              child: TextFormField(
+                                initialValue: quantity.toString(),
+                                textAlign: TextAlign.center,
+                                keyboardType: TextInputType.number,
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.green.shade700,
+                                ),
+                                decoration: const InputDecoration(
+                                  border: InputBorder.none,
+                                  contentPadding: EdgeInsets.zero,
+                                ),
+                                onChanged: (value) {
+                                  final newQuantity = int.tryParse(value) ?? 0;
+                                  if (newQuantity >= 0) {
+                                    setQuantity(newQuantity);
+                                  }
+                                },
+                              ),
+                            ),
+                          ),
+                          
+                          // Botón aumentar
+                          InkWell(
+                            onTap: () => setQuantity(quantity + 1),
+                            borderRadius: const BorderRadius.only(
+                              topRight: Radius.circular(8),
+                              bottomRight: Radius.circular(8),
+                            ),
+                            child: Container(
+                              width: 40,
+                              height: 40,
+                              decoration: BoxDecoration(
+                                color: Colors.green.withValues(alpha: 0.1),
+                                borderRadius: const BorderRadius.only(
+                                  topRight: Radius.circular(8),
+                                  bottomRight: Radius.circular(8),
+                                ),
+                              ),
+                              child: Icon(
+                                Icons.add,
+                                size: 16,
+                                color: Colors.green.shade600,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ],
       ),
     );
   }

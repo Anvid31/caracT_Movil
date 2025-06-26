@@ -4,7 +4,6 @@ import '../models/generalInfo.dart';
 import '../models/survey_state.dart';
 import '../widgets/form/custom_text_field.dart';
 import '../widgets/form/custom_date_field.dart';
-import '../widgets/form/autocomplete_field.dart';
 import '../widgets/form/form_navigation_buttons.dart';
 import '../widgets/layout/form_container.dart';
 import '../utils/location_data.dart';

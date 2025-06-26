@@ -353,17 +353,17 @@ class _PhotographicRecordPageState extends State<PhotographicRecordPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
+          const Row(
             children: [
               Icon(
                 Icons.photo_camera,
-                color: const Color(0xFF4CAF50),
+                color: Color(0xFF4CAF50),
                 size: 24,
               ),
-              const SizedBox(width: 8),
+              SizedBox(width: 8),
               Text(
                 'Resumen del Registro Fotográfico',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                   color: Color(0xFF2C3E50),
@@ -397,10 +397,10 @@ class _PhotographicRecordPageState extends State<PhotographicRecordPage> {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.check_circle,
                       size: 14,
-                      color: const Color(0xFF4CAF50),
+                      color: Color(0xFF4CAF50),
                     ),
                     const SizedBox(width: 4),
                     Text(

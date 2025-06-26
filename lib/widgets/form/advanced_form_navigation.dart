@@ -272,7 +272,7 @@ class _AdvancedFormNavigationState extends State<AdvancedFormNavigation>
               _onNextPressed();
             },
             icon: widget.isLoading
-                ? SizedBox(
+                ? const SizedBox(
                     width: 18,
                     height: 18,
                     child: CircularProgressIndicator(
