@@ -170,18 +170,18 @@ class _FormSummaryPageState extends State<FormSummaryPage> {
           color: Colors.blue.withOpacity(0.3),
         ),
       ),
-      child: Column(
+      child: const Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              const Icon(
+              Icon(
                 Icons.info_outline,
                 color: Colors.blue,
                 size: 24,
               ),
-              const SizedBox(width: 8),
-              const Text(
+              SizedBox(width: 8),
+              Text(
                 'Envío Automático',
                 style: TextStyle(
                   fontSize: 16,
@@ -191,13 +191,13 @@ class _FormSummaryPageState extends State<FormSummaryPage> {
               ),
             ],
           ),
-          const SizedBox(height: 12),
-          const Text(
+          SizedBox(height: 12),
+          Text(
             'Al enviar este formulario:',
             style: TextStyle(fontWeight: FontWeight.w500),
           ),
-          const SizedBox(height: 8),
-          const Text(
+          SizedBox(height: 8),
+          Text(
             '• Se guardará automáticamente en el dispositivo\n'
             '• Se enviará por email en segundo plano\n'
             '• Funcionará aunque cierre la aplicación\n'
