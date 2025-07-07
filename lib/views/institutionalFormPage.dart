@@ -145,7 +145,7 @@ class _InstitutionalFormPageState extends State<InstitutionalFormPage> {
                 const SizedBox(height: 16),
                 
                 LocationField(
-                  label: 'Ubicación geográfica de la sede educativa (Coordenadas)',
+                  label: 'Ubicación geográfica de la sede educativa (Coordenadas) - Oprima el botón para adquirir ubicación',
                   initialValue: _institutionalInfo.location,
                   onChanged: (value) => _institutionalInfo.location = value,
                 ),

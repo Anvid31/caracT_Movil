@@ -527,9 +527,9 @@ class _ElectricityFormPageState extends State<ElectricityFormPage> {
             child: Column(
               children: [
                 _buildServiceTypeOption(
-                  'Red eléctrica nacional',
+                  'Red eléctrica (Conexión a la red pública)',
                   Icons.power_outlined,
-                  'Red eléctrica nacional',
+                  'Red eléctrica (Conexión a la red pública)',
                 ),
                 const SizedBox(height: 8),
                 _buildServiceTypeOption(

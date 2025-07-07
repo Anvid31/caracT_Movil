@@ -1,5 +1,5 @@
 name: caracterizacion_cens
-description: "A new Flutter project."
+description: "A new Flutter project for CENS characterization surveys."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -30,32 +30,35 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  
+  # Almacenamiento local
   hive: ^2.2.3
   hive_flutter: ^1.1.0
   path_provider: ^2.1.1
-  connectivity_plus: ^5.0.2
-  json_annotation: ^4.8.1
-  # Gestión de estado
-  provider: ^6.1.1
-    # Almacenamiento local
   shared_preferences: ^2.2.2
   sqflite: ^2.3.0
-    # Networking
+  
+  # Gestión de estado
+  provider: ^6.1.1
+  
+  # Networking y conectividad
   http: ^1.1.0
+  connectivity_plus: ^5.0.2
+  
+  # Ubicación y media
   geolocator: ^14.0.1
   image_picker: ^1.1.2
   
-  # Para XML y ZIP
+  # Utilidades
+  json_annotation: ^4.8.1
   xml: ^6.4.2
   archive: ^3.4.9
   
-  # Para envío por correo
+  # Comunicación
   mailer: ^6.0.1
-  
-  # Para compartir archivos
   share_plus: ^10.0.3
   
-  # Para variables de entorno seguras
+  # Configuración
   flutter_dotenv: ^5.1.0
 
 dev_dependencies:

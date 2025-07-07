@@ -20,6 +20,9 @@ class SurveyState extends ChangeNotifier {
   AccessRouteInfo accessRouteInfo = AccessRouteInfo();
   PhotographicRecordInfo photographicRecordInfo = PhotographicRecordInfo();
 
+  // Constructor por defecto
+  SurveyState();
+
   void updateGeneralInfo(GeneralInfo info) {
     generalInfo = info;
     notifyListeners();
@@ -75,4 +78,46 @@ class SurveyState extends ChangeNotifier {
     'accessRouteInfo': accessRouteInfo.toJson(),
     'photographicRecordInfo': photographicRecordInfo.toJson(),
   };
+
+  // Implementar fromJson para facilitar la conversión desde JSON
+  factory SurveyState.fromJson(Map<String, dynamic> json) {
+    final state = SurveyState();
+    
+    if (json['generalInfo'] != null) {
+      final generalInfo = json['generalInfo'] as Map<String, dynamic>;
+      state.generalInfo.date = generalInfo['date'] != null ? DateTime.parse(generalInfo['date']) : null;
+      state.generalInfo.department = generalInfo['department'];
+      state.generalInfo.municipality = generalInfo['municipality'];
+      state.generalInfo.district = generalInfo['district'];
+      state.generalInfo.village = generalInfo['village'];
+      state.generalInfo.intervieweeName = generalInfo['intervieweeName'];
+      state.generalInfo.contact = generalInfo['contact'];
+    }
+    
+    if (json['institutionalInfo'] != null) {
+      final institutionalInfo = json['institutionalInfo'] as Map<String, dynamic>;
+      state.institutionalInfo.institutionName = institutionalInfo['institutionName'];
+      state.institutionalInfo.dane = institutionalInfo['dane'];
+      state.institutionalInfo.institutionType = institutionalInfo['institutionType'];
+      state.institutionalInfo.zone = institutionalInfo['zone'];
+      state.institutionalInfo.sector = institutionalInfo['sector'];
+      state.institutionalInfo.calendar = institutionalInfo['calendar'];
+      state.institutionalInfo.category = institutionalInfo['category'];
+      state.institutionalInfo.principalName = institutionalInfo['principalName'];
+      state.institutionalInfo.location = institutionalInfo['location'];
+      state.institutionalInfo.locationCoordinates = institutionalInfo['locationCoordinates'];
+      state.institutionalInfo.educationalHeadquarters = institutionalInfo['educationalHeadquarters'];
+      state.institutionalInfo.contact = institutionalInfo['contact'];
+    }
+    
+    if (json['observationsInfo'] != null) {
+      final observationsInfo = json['observationsInfo'] as Map<String, dynamic>;
+      state.observationsInfo.additionalObservations = observationsInfo['additionalObservations'];
+    }
+    
+    // Agregar más campos según sea necesario
+    // Por ahora, esto es suficiente para el envío de email básico
+    
+    return state;
+  }
 }

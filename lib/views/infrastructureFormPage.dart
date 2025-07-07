@@ -14,7 +14,10 @@ class InfrastructureFormPage extends StatefulWidget {
 
 class _InfrastructureFormPageState extends State<InfrastructureFormPage> {
   final _formKey = GlobalKey<FormState>();
-  late InfrastructureInfo infrastructureInfo;  final TextEditingController _proyectosController = TextEditingController();
+  late InfrastructureInfo infrastructureInfo;
+  final TextEditingController _proyectosController = TextEditingController();
+  final TextEditingController _otrosEspaciosController = TextEditingController();
+  final TextEditingController _otroPredioController = TextEditingController();
   bool _showErrors = false;
   
   @override
@@ -23,6 +26,8 @@ class _InfrastructureFormPageState extends State<InfrastructureFormPage> {
     // Siempre inicializar con datos limpios
     infrastructureInfo = InfrastructureInfo();
     _proyectosController.clear();
+    _otrosEspaciosController.clear();
+    _otroPredioController.clear();
     
     // Limpiar cualquier dato persistente del almacenamiento
     _clearStorageData();
@@ -109,6 +114,8 @@ class _InfrastructureFormPageState extends State<InfrastructureFormPage> {
         setState(() {
           infrastructureInfo = InfrastructureInfo();
           _proyectosController.clear();
+          _otrosEspaciosController.clear();
+          _otroPredioController.clear();
           _showErrors = false;
         });
         
@@ -189,6 +196,8 @@ class _InfrastructureFormPageState extends State<InfrastructureFormPage> {
 
     if (isValid) {
       infrastructureInfo.proyectosInfraestructura = _proyectosController.text;
+      infrastructureInfo.descripcionOtrosEspacios = _otrosEspaciosController.text;
+      infrastructureInfo.descripcionOtroPredio = _otroPredioController.text;
       try {        await StorageService.saveInfrastructureInfo(infrastructureInfo);
         if (mounted) {
           // Usar el nuevo sistema de navegación con transiciones suaves
@@ -513,7 +522,11 @@ class _InfrastructureFormPageState extends State<InfrastructureFormPage> {
             break;
           case 'hasOtros': 
             infrastructureInfo.hasOtros = value;
-            if (!value) infrastructureInfo.cantidadOtros = 0;
+            if (!value) {
+              infrastructureInfo.cantidadOtros = 0;
+              _otrosEspaciosController.clear();
+              infrastructureInfo.descripcionOtrosEspacios = '';
+            }
             break;
         }
       });
@@ -683,25 +696,13 @@ class _InfrastructureFormPageState extends State<InfrastructureFormPage> {
                           Expanded(
                             child: Container(
                               alignment: Alignment.center,
-                              child: TextFormField(
-                                initialValue: quantity.toString(),
-                                textAlign: TextAlign.center,
-                                keyboardType: TextInputType.number,
+                              child: Text(
+                                quantity.toString(),
                                 style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,
                                   color: Colors.green.shade700,
                                 ),
-                                decoration: const InputDecoration(
-                                  border: InputBorder.none,
-                                  contentPadding: EdgeInsets.zero,
-                                ),
-                                onChanged: (value) {
-                                  final newQuantity = int.tryParse(value) ?? 0;
-                                  if (newQuantity >= 0) {
-                                    setQuantity(newQuantity);
-                                  }
-                                },
                               ),
                             ),
                           ),
@@ -731,6 +732,62 @@ class _InfrastructureFormPageState extends State<InfrastructureFormPage> {
                             ),
                           ),
                         ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+          
+          // Campo de descripción para "Otros espacios"
+          if (isSelected && space['key'] == 'hasOtros') ...[
+            Container(
+              width: double.infinity,
+              height: 1,
+              color: Colors.green.withValues(alpha: 0.2),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      const SizedBox(width: 32),
+                      Icon(
+                        Icons.description,
+                        color: Colors.green.shade600,
+                        size: 16,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Especifique otros espacios:',
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.green.shade700,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Container(
+                    margin: const EdgeInsets.only(left: 32),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.green.shade300),
+                      color: Colors.white,
+                    ),
+                    child: TextFormField(
+                      controller: _otrosEspaciosController,
+                      maxLines: 2,
+                      style: const TextStyle(fontSize: 14),
+                      decoration: const InputDecoration(
+                        hintText: 'Ej: Biblioteca, laboratorio, auditorio, etc.',
+                        border: InputBorder.none,
+                        contentPadding: EdgeInsets.all(12),
+                        hintStyle: TextStyle(color: Colors.grey, fontSize: 13),
                       ),
                     ),
                   ),
@@ -984,6 +1041,62 @@ class _InfrastructureFormPageState extends State<InfrastructureFormPage> {
                   ),
                 const SizedBox(height: 16),
                 ...propertyOptions.map((option) => _buildPropertyOption(option)).toList(),
+                
+                // Campo de texto para "Otro"
+                if (infrastructureInfo.propiedadPredio == 'Otro') ...[
+                  const SizedBox(height: 16),
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.purple.shade300),
+                      color: Colors.purple.withValues(alpha: 0.05),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.edit,
+                                color: Colors.purple.shade600,
+                                size: 16,
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                'Especifique la propiedad del predio:',
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.purple.shade700,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 12),
+                          Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(color: Colors.purple.shade300),
+                              color: Colors.white,
+                            ),
+                            child: TextFormField(
+                              controller: _otroPredioController,
+                              style: const TextStyle(fontSize: 14),
+                              decoration: const InputDecoration(
+                                hintText: 'Ej: Iglesia, fundación, cooperativa, etc.',
+                                border: InputBorder.none,
+                                contentPadding: EdgeInsets.all(12),
+                                hintStyle: TextStyle(color: Colors.grey, fontSize: 13),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
               ],
             ),
           ),
@@ -1014,6 +1127,11 @@ class _InfrastructureFormPageState extends State<InfrastructureFormPage> {
         onTap: () {
           setState(() {
             infrastructureInfo.propiedadPredio = option['value'];
+            // Limpiar el campo "Otro" si se selecciona una opción diferente
+            if (option['value'] != 'Otro') {
+              _otroPredioController.clear();
+              infrastructureInfo.descripcionOtroPredio = '';
+            }
           });
         },
         child: Padding(
@@ -1076,6 +1194,8 @@ class _InfrastructureFormPageState extends State<InfrastructureFormPage> {
   @override
   void dispose() {
     _proyectosController.dispose();
+    _otrosEspaciosController.dispose();
+    _otroPredioController.dispose();
     super.dispose();
   }
 }

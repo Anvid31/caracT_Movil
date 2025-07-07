@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/observationsInfo.dart';
 import '../models/survey_state.dart';
-import '../services/xml_export_service.dart';
-import '../services/email_service.dart';
+import '../services/auto_sync_service.dart';
 import '../widgets/form/custom_text_field.dart';
 import '../widgets/form/form_header.dart';
 import '../widgets/layout/rounded_container.dart';
+import '../widgets/auto_sync_status_widget.dart';
 
 class ObservationsFormPage extends StatefulWidget {
   const ObservationsFormPage({super.key});
@@ -32,6 +32,8 @@ class _ObservationsFormPageState extends State<ObservationsFormPage> {
               totalSteps: 9,
               subtitle: 'Último paso - Complete la caracterización',
             ),
+            // Widget de estado de sincronización
+            const AutoSyncStatusWidget(),
             Expanded(
               child: RoundedContainer(
                 child: SingleChildScrollView(
@@ -200,141 +202,69 @@ class _ObservationsFormPageState extends State<ObservationsFormPage> {
       // Actualizar las observaciones
       surveyState.updateObservationsInfo(_observationsInfo);
       
-      // Mostrar diálogo de opciones de envío
-      _showExportOptionsDialog(surveyState);
+      // Mostrar diálogo simple de confirmación y activar sincronización
+      _showFinalSubmissionDialog(surveyState);
     }
   }
   
-  void _showExportOptionsDialog(SurveyState surveyState) {
+  void _showFinalSubmissionDialog(SurveyState surveyState) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Row(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        title: Row(
           children: [
-            Icon(Icons.send_rounded, color: Color(0xFF4CAF50)),
-            SizedBox(width: 8),
-            Text('Enviar Formulario'),
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.green.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Icon(
+                Icons.send_rounded,
+                color: Colors.green,
+                size: 24,
+              ),
+            ),
+            const SizedBox(width: 12),
+            const Text('Enviar Formulario'),
           ],
         ),
-        content: const Text(
-          '¿Cómo desea enviar la información recopilada?',
-          style: TextStyle(fontSize: 16),
-        ),
-        actions: [
-          TextButton.icon(
-            onPressed: () {
-              Navigator.of(context).pop();
-              _generateAndShareZip(surveyState);
-            },
-            icon: const Icon(Icons.share),
-            label: const Text('Compartir'),
-          ),
-          TextButton.icon(
-            onPressed: () {
-              Navigator.of(context).pop();
-              _showEmailDialog(surveyState);
-            },
-            icon: const Icon(Icons.email),
-            label: const Text('Email'),
-          ),
-          TextButton.icon(
-            onPressed: () {
-              Navigator.of(context).pop();
-              _generateAndSaveZip(surveyState);
-            },
-            icon: const Icon(Icons.download),
-            label: const Text('Guardar'),
-          ),
-        ],
-      ),
-    );
-  }
-  
-  void _generateAndShareZip(SurveyState surveyState) async {
-    _showLoadingDialog('Generando archivo...');
-    
-    try {
-      final zipFile = await XmlExportService.createSurveyPackage(surveyState);
-      Navigator.of(context).pop(); // Cerrar loading
-      
-      if (zipFile != null) {
-        await EmailService.shareZipFile(
-          zipFile, 
-          institutionName: surveyState.institutionalInfo.institutionName
-        );
-        _showSuccessDialog('Archivo generado exitosamente');
-      } else {
-        _showErrorDialog('Error al generar el archivo');
-      }
-    } catch (e) {
-      Navigator.of(context).pop(); // Cerrar loading
-      _showErrorDialog('Error: $e');
-    }
-  }
-  
-  void _generateAndSaveZip(SurveyState surveyState) async {
-    _showLoadingDialog('Guardando archivo...');
-    
-    try {
-      final zipFile = await XmlExportService.createSurveyPackage(surveyState);
-      Navigator.of(context).pop(); // Cerrar loading
-      
-      if (zipFile != null) {
-        final savedFile = await EmailService.copyToDownloads(
-          zipFile, 
-          institutionName: surveyState.institutionalInfo.institutionName
-        );
-        
-        if (savedFile != null) {
-          _showSuccessDialog('Archivo guardado en: ${savedFile.path}');
-        } else {
-          _showErrorDialog('Error al guardar el archivo');
-        }
-      } else {
-        _showErrorDialog('Error al generar el archivo');
-      }
-    } catch (e) {
-      Navigator.of(context).pop(); // Cerrar loading
-      _showErrorDialog('Error: $e');
-    }
-  }  void _showEmailDialog(SurveyState surveyState) {
-    // Verificar si la configuración de correo está lista
-    if (!EmailService.isEmailConfigured()) {
-      _showConfigurationDialog();
-      return;
-    }
-    
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Enviar por Correo'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(
-              Icons.email,
-              size: 64,
-              color: Colors.blue,
-            ),
-            const SizedBox(height: 16),
             const Text(
-              'La caracterización será enviada automáticamente al correo institucional configurado.',
-              textAlign: TextAlign.center,
+              '¿Cómo desea enviar la información recopilada?',
               style: TextStyle(fontSize: 16),
             ),
-            const SizedBox(height: 12),
-            Text(
-              'Destino: mendozadiazjuandavid@gmail.com',
-              style: TextStyle(
-                fontSize: 14, 
-                color: Colors.grey[600],
-                fontStyle: FontStyle.italic,
-              ),
-            ),
             const SizedBox(height: 16),
-            const Text(
-              '¿Desea continuar con el envío?',
-              style: TextStyle(fontWeight: FontWeight.bold),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.blue.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Column(
+                children: [
+                  Icon(Icons.cloud_upload, color: Colors.blue, size: 32),
+                  SizedBox(height: 8),
+                  Text(
+                    'Envío Automático',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.blue,
+                    ),
+                  ),
+                  SizedBox(height: 4),
+                  Text(
+                    'Se detectará automáticamente la conexión y se enviará por correo electrónico',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 12),
+                  ),
+                ],
+              ),
             ),
           ],
         ),
@@ -346,24 +276,68 @@ class _ObservationsFormPageState extends State<ObservationsFormPage> {
           ElevatedButton(
             onPressed: () {
               Navigator.of(context).pop();
-              _sendByEmail(surveyState);
+              _scheduleAutomaticSync(surveyState);
             },
-            child: const Text('Enviar'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.green,
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('Envío Automático'),
           ),
         ],
       ),
     );
   }
+
+  /// Programa el envío automático en segundo plano
+  void _scheduleAutomaticSync(SurveyState surveyState) async {
+    _showLoadingDialog('Programando envío automático...');
+    
+    try {
+      // Convertir surveyState a Map para almacenamiento
+      final surveyData = surveyState.toJson();
+      
+      // Programar para sincronización automática con el nuevo servicio
+      await AutoSyncService.scheduleImmediateSync(surveyData);
+      
+      Navigator.of(context).pop(); // Cerrar loading
+      
+      // Mostrar confirmación con información sobre el envío automático
+      _showAutomaticSyncConfirmation();
+      
+    } catch (e) {
+      Navigator.of(context).pop(); // Cerrar loading
+      _showErrorDialog('Error programando envío automático: $e');
+    }
+  }
   
-  void _showConfigurationDialog() {
+  /// Muestra confirmación del envío automático programado
+  void _showAutomaticSyncConfirmation() {
     showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (context) => AlertDialog(
-        title: const Row(
+        title: Row(
           children: [
-            Icon(Icons.warning, color: Colors.orange),
-            SizedBox(width: 8),
-            Text('Configuración Requerida'),
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.green.shade100,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.cloud_done,
+                color: Colors.green.shade600,
+                size: 24,
+              ),
+            ),
+            const SizedBox(width: 12),
+            const Expanded(
+              child: Text(
+                'Envío Programado',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+            ),
           ],
         ),
         content: Column(
@@ -371,69 +345,71 @@ class _ObservationsFormPageState extends State<ObservationsFormPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              'El servicio de correo electrónico no está configurado.',
-              style: TextStyle(fontWeight: FontWeight.bold),
+              '✅ Su formulario ha sido guardado exitosamente',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
             ),
             const SizedBox(height: 12),
-            const Text(
-              'Para enviar caracterizaciones por correo, debe configurar las credenciales en:',
-            ),
-            const SizedBox(height: 8),
             Container(
-              padding: const EdgeInsets.all(8),
+              padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.grey[100],
-                borderRadius: BorderRadius.circular(4),
+                color: Colors.blue.shade50,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.blue.shade200),
               ),
-              child: const Text(
-                'lib/config/email_config.dart',
-                style: TextStyle(
-                  fontFamily: 'monospace',
-                  fontSize: 12,
-                ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(Icons.wifi_find, color: Colors.blue.shade600, size: 20),
+                      const SizedBox(width: 8),
+                      const Text(
+                        'Monitoreo Automático Activado',
+                        style: TextStyle(fontWeight: FontWeight.w600),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  const Text(
+                    '• La app buscará conexión automáticamente\n'
+                    '• Se enviará cuando detecte WiFi o datos móviles\n'
+                    '• Funciona incluso si cierra la aplicación\n'
+                    '• Recibirá confirmación por correo electrónico',
+                    style: TextStyle(fontSize: 13, height: 1.4),
+                  ),
+                ],
               ),
             ),
             const SizedBox(height: 12),
-            const Text(
-              'Consulte el archivo para instrucciones detalladas de configuración.',
-              style: TextStyle(fontSize: 12),
+            Row(
+              children: [
+                Icon(Icons.info_outline, color: Colors.orange.shade600, size: 18),
+                const SizedBox(width: 6),
+                const Expanded(
+                  child: Text(
+                    'Puede cerrar la app de forma segura',
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontStyle: FontStyle.italic,
+                      color: Colors.black87,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () {
+              Navigator.of(context).pop(); // Cerrar diálogo
+              Navigator.of(context).popUntil((route) => route.isFirst); // Volver al inicio
+            },
             child: const Text('Entendido'),
           ),
         ],
       ),
     );
-  }
-  
-  void _sendByEmail(SurveyState surveyState) async {
-    _showLoadingDialog('Enviando por correo...');
-    
-    try {
-      final zipFile = await XmlExportService.createSurveyPackage(surveyState);
-      
-      if (zipFile != null) {
-        final success = await EmailService.sendSurveyQuick(zipFile, surveyState);
-        
-        Navigator.of(context).pop(); // Cerrar loading
-        
-        if (success) {
-          _showSuccessDialog('Correo enviado exitosamente al sistema de caracterización');
-        } else {
-          _showErrorDialog('Error al enviar el correo. Verifique la configuración del servicio.');
-        }
-      } else {
-        Navigator.of(context).pop(); // Cerrar loading
-        _showErrorDialog('Error al generar el archivo');
-      }
-    } catch (e) {
-      Navigator.of(context).pop(); // Cerrar loading
-      _showErrorDialog('Error: $e');
-    }
   }
   
   void _showLoadingDialog(String message) {
@@ -448,31 +424,6 @@ class _ObservationsFormPageState extends State<ObservationsFormPage> {
             Expanded(child: Text(message)),
           ],
         ),
-      ),
-    );
-  }
-  
-  void _showSuccessDialog(String message) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Row(
-          children: [
-            Icon(Icons.check_circle, color: Colors.green),
-            SizedBox(width: 8),
-            Text('Éxito'),
-          ],
-        ),
-        content: Text(message),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-              Navigator.of(context).popUntil((route) => route.isFirst);
-            },
-            child: const Text('Aceptar'),
-          ),
-        ],
       ),
     );
   }

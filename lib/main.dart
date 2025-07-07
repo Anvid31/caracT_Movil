@@ -6,11 +6,11 @@ import 'models/survey_state.dart';
 import 'views/splash_screen.dart';
 import 'config/theme.dart';
 import 'services/storage_service.dart';
+import 'services/auto_sync_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
-  // Cargar variables de entorno
   try {
     await dotenv.load(fileName: ".env");
     print('Variables de entorno cargadas exitosamente');
@@ -19,19 +19,22 @@ void main() async {
     print('Cree un archivo .env basado en .env.example para configurar las credenciales');
   }
   
-  // Inicializar Hive
   try {
     await StorageService.init();
     print('Hive inicializado exitosamente');
   } catch (e) {
     print('Error al inicializar Hive: $e');
-    // Continuar con la aplicación aunque falle la inicialización
   }
   
-  // Forzar orientación vertical
+  try {
+    await AutoSyncService.initialize();
+    print('Servicio de sincronización automática inicializado');
+  } catch (e) {
+    print('Error al inicializar sincronización automática: $e');
+  }
+  
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
-    DeviceOrientation.portraitDown,
   ]);
   
   runApp(

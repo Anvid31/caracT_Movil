@@ -18,6 +18,8 @@ class InfrastructureInfo {
   
   String proyectosInfraestructura;
   String propiedadPredio;
+  String descripcionOtrosEspacios;
+  String descripcionOtroPredio;
   
   InfrastructureInfo({
     this.hasSalones = false,
@@ -36,6 +38,8 @@ class InfrastructureInfo {
     this.cantidadOtros = 0,
     this.proyectosInfraestructura = '',
     this.propiedadPredio = '',
+    this.descripcionOtrosEspacios = '',
+    this.descripcionOtroPredio = '',
   });
 
   Map<String, dynamic> toJson() => {
@@ -55,6 +59,8 @@ class InfrastructureInfo {
     'cantidadOtros': cantidadOtros,
     'proyectosInfraestructura': proyectosInfraestructura,
     'propiedadPredio': propiedadPredio,
+    'descripcionOtrosEspacios': descripcionOtrosEspacios,
+    'descripcionOtroPredio': descripcionOtroPredio,
   };
   factory InfrastructureInfo.fromJson(Map<String, dynamic> json) {
     return InfrastructureInfo(
@@ -74,6 +80,8 @@ class InfrastructureInfo {
       cantidadOtros: json['cantidadOtros'] ?? 0,
       proyectosInfraestructura: json['proyectosInfraestructura'] ?? '',
       propiedadPredio: json['propiedadPredio'] ?? '',
+      descripcionOtrosEspacios: json['descripcionOtrosEspacios'] ?? '',
+      descripcionOtroPredio: json['descripcionOtroPredio'] ?? '',
     );
   }
 }

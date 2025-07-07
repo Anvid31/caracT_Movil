@@ -7,7 +7,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 class EmailConfig {
   /// Dirección de correo destino donde se enviarán todas las caracterizaciones
   static String get destinationEmail => 
-      dotenv.env['DESTINATION_EMAIL'] ?? 'mendozadiazjuandavid@gmail.com';
+      dotenv.env['DESTINATION_EMAIL'] ?? '';
   
   /// Dirección de correo emisor (cuenta que enviará los correos)
   static String get senderEmail => 

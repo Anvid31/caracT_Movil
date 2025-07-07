@@ -19,6 +19,7 @@ class EnhancedFormContainer extends StatefulWidget {
   final List<Widget>? headerActions;
   final Color? primaryColor;
   final FormTransitionType transitionType;
+  final Widget? floatingActionButton;
 
   const EnhancedFormContainer({
     super.key,
@@ -36,6 +37,7 @@ class EnhancedFormContainer extends StatefulWidget {
     this.headerActions,
     this.primaryColor,
     this.transitionType = FormTransitionType.slideScale,
+    this.floatingActionButton,
   });
 
   @override
@@ -135,6 +137,9 @@ class _EnhancedFormContainerState extends State<EnhancedFormContainer>
         currentStep: widget.currentStep,
         totalSteps: widget.totalSteps,
       ),
+      
+      // FloatingActionButton opcional
+      floatingActionButton: widget.floatingActionButton,
     );
   }
 
