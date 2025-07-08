@@ -169,7 +169,7 @@ class _CoverageFormPageState extends State<CoverageFormPage> {
                 const SizedBox(height: 24),
                 
                 CustomNumberField(
-                  label: 'N° alumnos',
+                  label: 'N° alumnos Totales',
                   initialValue: _coverageInfo.totalStudents,
                   onChanged: (value) => _coverageInfo.totalStudents = value,
                 ),

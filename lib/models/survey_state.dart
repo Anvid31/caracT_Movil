@@ -115,6 +115,14 @@ class SurveyState extends ChangeNotifier {
       state.observationsInfo.additionalObservations = observationsInfo['additionalObservations'];
     }
     
+    if (json['electricityInfo'] != null) {
+      final electricityInfo = json['electricityInfo'] as Map<String, dynamic>;
+      state.electricityInfo.hasElectricService = electricityInfo['hasElectricService'];
+      state.electricityInfo.electricServiceType = electricityInfo['electricServiceType'];
+      state.electricityInfo.otherElectricServiceDescription = electricityInfo['otherElectricServiceDescription'];
+      state.electricityInfo.interestedInSolarPanels = electricityInfo['interestedInSolarPanels'];
+    }
+    
     // Agregar más campos según sea necesario
     // Por ahora, esto es suficiente para el envío de email básico
     

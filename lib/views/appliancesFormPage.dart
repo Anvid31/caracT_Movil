@@ -24,151 +24,6 @@ class _AppliancesFormPageState extends State<AppliancesFormPage> {
     _appliancesInfo = surveyState.appliancesInfo;
   }
 
-  Future<void> _showDeleteDialog(ApplianceItem appliance) async {
-    return showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          title: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.red.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Icon(
-                  Icons.delete_outline,
-                  color: Colors.red.shade600,
-                  size: 24,
-                ),
-              ),
-              const SizedBox(width: 12),
-              const Text(
-                'Confirmar eliminación',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              RichText(
-                text: TextSpan(
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey,
-                  ),
-                  children: [
-                    const TextSpan(text: '¿Está seguro de eliminar '),
-                    TextSpan(
-                      text: '"${appliance.name}"',
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w600,
-                        color: Colors.black87,
-                      ),
-                    ),
-                    const TextSpan(text: '?'),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                'Esta acción no se puede deshacer.',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey,
-                  fontStyle: FontStyle.italic,
-                ),
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: Text(
-                'Cancelar',
-                style: TextStyle(
-                  color: Colors.grey.shade600,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red.shade600,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 12,
-                ),
-              ),
-              onPressed: () {
-                if (_appliancesInfo.appliances.contains(appliance)) {
-                  setState(() {
-                    _appliancesInfo.appliances.remove(appliance);
-                  });
-                  
-                  // Actualizar el estado global
-                  Provider.of<SurveyState>(context, listen: false)
-                      .updateAppliancesInfo(_appliancesInfo);
-
-                  Navigator.of(context).pop();
-                  
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Row(
-                        children: [
-                          const Icon(Icons.delete, color: Colors.white),
-                          const SizedBox(width: 8),
-                          Text('${appliance.name} eliminado'),
-                        ],
-                      ),
-                      backgroundColor: Colors.red.shade600,
-                      behavior: SnackBarBehavior.floating,
-                      margin: const EdgeInsets.all(16),
-                      duration: const Duration(seconds: 3),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      action: SnackBarAction(
-                        label: 'Deshacer',
-                        textColor: Colors.white,
-                        onPressed: () {
-                          setState(() {
-                            _appliancesInfo.appliances.add(appliance);
-                          });
-                          Provider.of<SurveyState>(context, listen: false)
-                              .updateAppliancesInfo(_appliancesInfo);
-                        },
-                      ),
-                    ),
-                  );
-                }
-              },
-              child: const Text(
-                'Eliminar',
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   Widget _buildApplianceItem(ApplianceItem appliance) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
@@ -219,19 +74,6 @@ class _AppliancesFormPageState extends State<AppliancesFormPage> {
                     ),
                   ),
                 ),
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.red.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: IconButton(
-                    icon: const Icon(Icons.delete_outline),
-                    color: Colors.red.shade600,
-                    iconSize: 20,
-                    padding: const EdgeInsets.all(8),
-                    onPressed: () => _showDeleteDialog(appliance),
-                  ),
-                ),
               ],
             ),
             const SizedBox(height: 20),
@@ -239,9 +81,9 @@ class _AppliancesFormPageState extends State<AppliancesFormPage> {
             // Contenido principal
             Row(
               children: [
-                // Campo de cantidad
+                // Campo de cantidad con botones
                 Expanded(
-                  flex: 1,
+                  flex: 2,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -255,41 +97,96 @@ class _AppliancesFormPageState extends State<AppliancesFormPage> {
                       ),
                       const SizedBox(height: 8),
                       Container(
+                        height: 48,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: Colors.grey.shade300),
-                          color: Colors.grey.shade50,
+                          border: Border.all(
+                            color: const Color(0xFF4CAF50).withValues(alpha: 0.3),
+                            width: 1,
+                          ),
+                          color: Colors.white,
                         ),
-                        child: TextFormField(
-                          initialValue: appliance.quantity.toString(),
-                          keyboardType: TextInputType.number,
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                          decoration: const InputDecoration(
-                            border: InputBorder.none,
-                            contentPadding: EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 12,
+                        child: Row(
+                          children: [
+                            // Botón disminuir
+                            InkWell(
+                              onTap: appliance.quantity > 0 
+                                  ? () {
+                                      setState(() {
+                                        appliance.quantity--;
+                                      });
+                                    }
+                                  : null,
+                              borderRadius: const BorderRadius.only(
+                                topLeft: Radius.circular(12),
+                                bottomLeft: Radius.circular(12),
+                              ),
+                              child: Container(
+                                width: 40,
+                                height: 48,
+                                decoration: BoxDecoration(
+                                  color: appliance.quantity > 0 
+                                      ? const Color(0xFF4CAF50).withValues(alpha: 0.1)
+                                      : Colors.grey.withValues(alpha: 0.1),
+                                  borderRadius: const BorderRadius.only(
+                                    topLeft: Radius.circular(12),
+                                    bottomLeft: Radius.circular(12),
+                                  ),
+                                ),
+                                child: Icon(
+                                  Icons.remove,
+                                  size: 20,
+                                  color: appliance.quantity > 0 
+                                      ? const Color(0xFF4CAF50)
+                                      : Colors.grey.shade400,
+                                ),
+                              ),
                             ),
-                            hintText: '0',
-                            hintStyle: TextStyle(color: Colors.grey),
-                          ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) return null;
-                            final number = int.tryParse(value);
-                            if (number == null || number < 0) {
-                              return 'Inválido';
-                            }
-                            return null;
-                          },
-                          onChanged: (value) {
-                            setState(() {
-                              appliance.quantity = int.tryParse(value) ?? 0;
-                            });
-                          },
+                            
+                            // Campo numérico
+                            Expanded(
+                              child: Container(
+                                alignment: Alignment.center,
+                                child: Text(
+                                  appliance.quantity.toString(),
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                    color: Color(0xFF4CAF50),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            
+                            // Botón aumentar
+                            InkWell(
+                              onTap: () {
+                                setState(() {
+                                  appliance.quantity++;
+                                });
+                              },
+                              borderRadius: const BorderRadius.only(
+                                topRight: Radius.circular(12),
+                                bottomRight: Radius.circular(12),
+                              ),
+                              child: Container(
+                                width: 40,
+                                height: 48,
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFF4CAF50).withValues(alpha: 0.1),
+                                  borderRadius: const BorderRadius.only(
+                                    topRight: Radius.circular(12),
+                                    bottomRight: Radius.circular(12),
+                                  ),
+                                ),
+                                child: const Icon(
+                                  Icons.add,
+                                  size: 20,
+                                  color: Color(0xFF4CAF50),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],

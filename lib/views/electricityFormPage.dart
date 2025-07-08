@@ -15,6 +15,7 @@ class ElectricityFormPage extends StatefulWidget {
 
 class _ElectricityFormPageState extends State<ElectricityFormPage> {
   final _formKey = GlobalKey<FormState>();
+  final _otherServiceController = TextEditingController();
   late ElectricityInfo _electricityInfo;
   bool _showErrors = false;
 
@@ -22,6 +23,13 @@ class _ElectricityFormPageState extends State<ElectricityFormPage> {
   void initState() {
     super.initState();
     _electricityInfo = Provider.of<SurveyState>(context, listen: false).electricityInfo;
+    _otherServiceController.text = _electricityInfo.otherElectricServiceDescription ?? '';
+  }
+
+  @override
+  void dispose() {
+    _otherServiceController.dispose();
+    super.dispose();
   }  @override
   Widget build(BuildContext context) {
     return EnhancedFormContainer(
@@ -74,6 +82,29 @@ class _ElectricityFormPageState extends State<ElectricityFormPage> {
                   Icon(Icons.warning, color: Colors.white),
                   SizedBox(width: 8),
                   Text('Por favor, indique de qué manera recibe servicio eléctrico'),
+                ],
+              ),
+              backgroundColor: Colors.orange.shade600,
+              behavior: SnackBarBehavior.floating,
+              margin: const EdgeInsets.all(16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+          );
+        }
+        
+        // Validar que si seleccionó "Otro", haya especificado cuál
+        if (_electricityInfo.electricServiceType == 'Otro' && 
+            (_electricityInfo.otherElectricServiceDescription == null || _electricityInfo.otherElectricServiceDescription!.trim().isEmpty)) {
+          isValid = false;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Row(
+                children: [
+                  Icon(Icons.warning, color: Colors.white),
+                  SizedBox(width: 8),
+                  Text('Por favor, especifique cuál es el otro tipo de servicio eléctrico'),
                 ],
               ),
               backgroundColor: Colors.orange.shade600,
@@ -190,9 +221,11 @@ class _ElectricityFormPageState extends State<ElectricityFormPage> {
                   onChanged: (value) {
                     setState(() {
                       _electricityInfo.hasElectricService = value;
-                      // Si selecciona "No", limpiar el tipo de servicio
+                      // Si selecciona "No", limpiar el tipo de servicio y descripción
                       if (value == false) {
                         _electricityInfo.electricServiceType = null;
+                        _electricityInfo.otherElectricServiceDescription = null;
+                        _otherServiceController.clear();
                       }
                     });
                   },
@@ -549,6 +582,85 @@ class _ElectricityFormPageState extends State<ElectricityFormPage> {
                   Icons.more_horiz,
                   'Otro',
                 ),
+                
+                // Campo de texto para "Otro" - aparece cuando se selecciona Otro
+                if (_electricityInfo.electricServiceType == 'Otro') ...[
+                  const SizedBox(height: 16),
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.blue.withValues(alpha: 0.05),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: Colors.blue.withValues(alpha: 0.2),
+                        width: 1,
+                      ),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.edit_outlined,
+                              color: Colors.blue.shade600,
+                              size: 18,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              'Especifique el tipo de servicio eléctrico:',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.blue.shade700,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        TextFormField(
+                          controller: _otherServiceController,
+                          onChanged: (value) {
+                            _electricityInfo.otherElectricServiceDescription = value.trim();
+                          },
+                          decoration: InputDecoration(
+                            hintText: 'Ej: Planta eléctrica comunitaria, micro-hidráulica, etc.',
+                            hintStyle: TextStyle(
+                              fontSize: 13,
+                              color: Colors.grey.shade500,
+                            ),
+                            filled: true,
+                            fillColor: Colors.white,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide(color: Colors.grey.shade300),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide(color: Colors.grey.shade300),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide(color: Colors.blue.shade400, width: 2),
+                            ),
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 12,
+                            ),
+                          ),
+                          maxLines: 2,
+                          validator: (value) {
+                            if (_electricityInfo.electricServiceType == 'Otro' && 
+                                (value == null || value.trim().isEmpty)) {
+                              return 'Por favor, especifique el tipo de servicio';
+                            }
+                            return null;
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ],
             ),
           ),
@@ -579,6 +691,11 @@ class _ElectricityFormPageState extends State<ElectricityFormPage> {
         onTap: () {
           setState(() {
             _electricityInfo.electricServiceType = value;
+            // Si no selecciona "Otro", limpiar la descripción
+            if (value != 'Otro') {
+              _electricityInfo.otherElectricServiceDescription = null;
+              _otherServiceController.clear();
+            }
           });
         },
         child: Padding(
