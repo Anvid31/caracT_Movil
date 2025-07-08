@@ -104,7 +104,7 @@ class _ElectricityFormPageState extends State<ElectricityFormPage> {
                 children: [
                   Icon(Icons.warning, color: Colors.white),
                   SizedBox(width: 8),
-                  Text('Por favor, especifique cuál es el otro tipo de servicio eléctrico'),
+                  Text('Por favor, especifique el tipo'),
                 ],
               ),
               backgroundColor: Colors.orange.shade600,

@@ -4,9 +4,8 @@ import '../models/observationsInfo.dart';
 import '../models/survey_state.dart';
 import '../services/auto_sync_service.dart';
 import '../widgets/form/custom_text_field.dart';
-import '../widgets/form/form_header.dart';
-import '../widgets/layout/rounded_container.dart';
-import '../widgets/auto_sync_status_widget.dart';
+import '../widgets/layout/enhanced_form_container.dart';
+import '../utils/form_navigator.dart';
 
 class ObservationsFormPage extends StatefulWidget {
   const ObservationsFormPage({super.key});
@@ -17,180 +16,132 @@ class ObservationsFormPage extends StatefulWidget {
 
 class _ObservationsFormPageState extends State<ObservationsFormPage> {
   final _formKey = GlobalKey<FormState>();
-  final _observationsInfo = ObservationsInfo();
+  late ObservationsInfo _observationsInfo;
+
+  @override
+  void initState() {
+    super.initState();
+    final surveyState = Provider.of<SurveyState>(context, listen: false);
+    _observationsInfo = surveyState.observationsInfo;
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFF4CAF50),
-      body: SafeArea(
-        child: Column(
-          children: [
-            const FormHeader(
-              title: 'Observaciones Finales',
-              currentStep: 9,
-              totalSteps: 9,
-              subtitle: 'Último paso - Complete la caracterización',
-            ),
-            // Widget de estado de sincronización
-            const AutoSyncStatusWidget(),
-            Expanded(
-              child: RoundedContainer(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Form(
-                    key: _formKey,                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        // Caja informativa con descripción
-                        Container(
-                          padding: const EdgeInsets.all(20),
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [
-                                const Color(0xFF607D8B).withValues(alpha: 0.1),
-                                const Color(0xFF607D8B).withValues(alpha: 0.05),
-                              ],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            ),
-                            borderRadius: BorderRadius.circular(16),
-                            border: Border.all(
-                              color: const Color(0xFF607D8B).withValues(alpha: 0.2),
-                              width: 1,
-                            ),
-                          ),
-                          child: Column(
-                            children: [
-                              const Icon(
-                                Icons.comment_outlined,
-                                size: 32,
-                                color: Color(0xFF607D8B),
-                              ),
-                              const SizedBox(height: 12),
-                              const Text(
-                                'Observaciones Finales',
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xFF2E2E2E),
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                'Comparta comentarios adicionales o información relevante sobre la sede educativa',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.grey.shade600,
-                                  height: 1.4,
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 24),
-                        CustomTextField(
-                          label: 'Observaciones adicionales',
-                          hintText: 'Agregue cualquier información adicional relevante',
-                          onChanged: (value) => _observationsInfo.additionalObservations = value,
-                          maxLines: 5,
-                        ),
-                        const SizedBox(height: 32),
-                        
-                        // Botón de envío final con diseño especial
-                        Container(
-                          width: double.infinity,
-                          height: 60,
-                          decoration: BoxDecoration(
-                            gradient: const LinearGradient(
-                              colors: [Color(0xFF4CAF50), Color(0xFF45A049)],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            ),
-                            borderRadius: BorderRadius.circular(16),
-                            boxShadow: [
-                              BoxShadow(
-                                color: const Color(0xFF4CAF50).withValues(alpha: 0.3),
-                                offset: const Offset(0, 4),
-                                blurRadius: 12,
-                                spreadRadius: 0,
-                              ),
-                            ],
-                          ),
-                          child: Material(
-                            color: Colors.transparent,
-                            child: InkWell(
-                              borderRadius: BorderRadius.circular(16),
-                              onTap: _submitForm,
-                              child: const Center(
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(
-                                      Icons.send_rounded,
-                                      color: Colors.white,
-                                      size: 24,
-                                    ),
-                                    SizedBox(width: 12),
-                                    Text(
-                                      'Finalizar y Enviar Caracterización',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600,
-                                        letterSpacing: 0.5,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                        
-                        const SizedBox(height: 16),
-                        
-                        // Mensaje informativo
-                        Container(
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: Colors.blue.withValues(alpha: 0.05),
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
-                              color: Colors.blue.withValues(alpha: 0.2),
-                              width: 1,
-                            ),
-                          ),
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.info_outline,
-                                color: Colors.blue.shade600,
-                                size: 20,
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Text(
-                                  'Al enviar completará la caracterización de la sede educativa. Podrá compartir, enviar por email o guardar los resultados.',
-                                  style: TextStyle(
-                                    fontSize: 13,
-                                    color: Colors.blue.shade700,
-                                    height: 1.4,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        )
+    return EnhancedFormContainer(
+      title: 'Observaciones Finales',
+      subtitle: 'Último paso - Complete la caracterización',
+      currentStep: 9,
+      onPrevious: () => FormNavigator.popForm(context),
+      onNext: _submitForm,
+      nextLabel: 'Finalizar y Enviar',
+      showPrevious: true,
+      transitionType: FormTransitionType.slideScale,
+      child: SingleChildScrollView(
+        physics: const ClampingScrollPhysics(),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // Caja informativa con descripción
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        const Color(0xFF607D8B).withValues(alpha: 0.1),
+                        const Color(0xFF607D8B).withValues(alpha: 0.05),
                       ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: const Color(0xFF607D8B).withValues(alpha: 0.2),
+                      width: 1,
                     ),
                   ),
+                  child: Column(
+                    children: [
+                      const Icon(
+                        Icons.comment_outlined,
+                        size: 32,
+                        color: Color(0xFF607D8B),
+                      ),
+                      const SizedBox(height: 12),
+                      const Text(
+                        'Observaciones Finales',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF2E2E2E),
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Comparta comentarios adicionales o información relevante sobre la sede educativa',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey.shade600,
+                          height: 1.4,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
                 ),
-              ),
+                const SizedBox(height: 24),
+                
+                CustomTextField(
+                  label: 'Observaciones adicionales',
+                  hintText: 'Agregue cualquier información adicional relevante',
+                  initialValue: _observationsInfo.additionalObservations,
+                  onChanged: (value) => _observationsInfo.additionalObservations = value,
+                  maxLines: 5,
+                ),
+                
+                const SizedBox(height: 24),
+                
+                // Mensaje informativo
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.blue.withValues(alpha: 0.05),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: Colors.blue.withValues(alpha: 0.2),
+                      width: 1,
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.info_outline,
+                        color: Colors.blue.shade600,
+                        size: 20,
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          'Al enviar completará la caracterización de la sede educativa. Podrá compartir, enviar por email o guardar los resultados.',
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: Colors.blue.shade700,
+                            height: 1.4,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                
+                const SizedBox(height: 80), // Espacio para los botones fijos
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
@@ -201,6 +152,19 @@ class _ObservationsFormPageState extends State<ObservationsFormPage> {
       
       // Actualizar las observaciones
       surveyState.updateObservationsInfo(_observationsInfo);
+      
+      // DEBUG: Verificar el estado fotográfico antes del envío
+      final photoInfo = surveyState.photographicRecordInfo;
+      print('🔍 ANTES DEL ENVÍO - Estado del registro fotográfico:');
+      print('   - generalPhoto: ${photoInfo.generalPhoto}');
+      print('   - infrastructurePhoto: ${photoInfo.infrastructurePhoto}');
+      print('   - electricityPhoto: ${photoInfo.electricityPhoto}');
+      print('   - environmentPhoto: ${photoInfo.environmentPhoto}');
+      print('   - frontSchoolPhoto: ${photoInfo.frontSchoolPhoto}');
+      print('   - classroomsPhoto: ${photoInfo.classroomsPhoto}');
+      print('   - kitchenPhoto: ${photoInfo.kitchenPhoto}');
+      print('   - diningRoomPhoto: ${photoInfo.diningRoomPhoto}');
+      print('   - additionalPhotos: ${photoInfo.additionalPhotos}');
       
       // Mostrar diálogo simple de confirmación y activar sincronización
       _showFinalSubmissionDialog(surveyState);

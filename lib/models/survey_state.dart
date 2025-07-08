@@ -110,22 +110,34 @@ class SurveyState extends ChangeNotifier {
       state.institutionalInfo.contact = institutionalInfo['contact'];
     }
     
+    if (json['coverageInfo'] != null) {
+      state.coverageInfo = CoverageInfo.fromJson(json['coverageInfo'] as Map<String, dynamic>);
+    }
+    
+    if (json['infrastructureInfo'] != null) {
+      state.infrastructureInfo = InfrastructureInfo.fromJson(json['infrastructureInfo'] as Map<String, dynamic>);
+    }
+    
+    if (json['appliancesInfo'] != null) {
+      state.appliancesInfo = AppliancesInfo.fromJson(json['appliancesInfo'] as Map<String, dynamic>);
+    }
+    
+    if (json['accessRouteInfo'] != null) {
+      state.accessRouteInfo = AccessRouteInfo.fromJson(json['accessRouteInfo'] as Map<String, dynamic>);
+    }
+    
+    if (json['photographicRecordInfo'] != null) {
+      state.photographicRecordInfo = PhotographicRecordInfo.fromJson(json['photographicRecordInfo'] as Map<String, dynamic>);
+    }
+    
     if (json['observationsInfo'] != null) {
-      final observationsInfo = json['observationsInfo'] as Map<String, dynamic>;
-      state.observationsInfo.additionalObservations = observationsInfo['additionalObservations'];
+      state.observationsInfo = ObservationsInfo.fromJson(json['observationsInfo'] as Map<String, dynamic>);
     }
     
     if (json['electricityInfo'] != null) {
-      final electricityInfo = json['electricityInfo'] as Map<String, dynamic>;
-      state.electricityInfo.hasElectricService = electricityInfo['hasElectricService'];
-      state.electricityInfo.electricServiceType = electricityInfo['electricServiceType'];
-      state.electricityInfo.otherElectricServiceDescription = electricityInfo['otherElectricServiceDescription'];
-      state.electricityInfo.interestedInSolarPanels = electricityInfo['interestedInSolarPanels'];
+      state.electricityInfo = ElectricityInfo.fromJson(json['electricityInfo'] as Map<String, dynamic>);
     }
-    
-    // Agregar más campos según sea necesario
-    // Por ahora, esto es suficiente para el envío de email básico
-    
+
     return state;
   }
 }

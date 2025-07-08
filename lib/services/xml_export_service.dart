@@ -155,6 +155,19 @@ class XmlExportService {
   /// Crea un archivo ZIP con el XML y todas las fotos
   static Future<File?> createSurveyPackage(SurveyState surveyState) async {
     try {
+      // Debug: Verificar información fotográfica
+      final debugPhotoInfo = surveyState.photographicRecordInfo;
+      print('🔍 DEBUG - Estado del registro fotográfico:');
+      print('   - generalPhoto: ${debugPhotoInfo.generalPhoto}');
+      print('   - infrastructurePhoto: ${debugPhotoInfo.infrastructurePhoto}');
+      print('   - electricityPhoto: ${debugPhotoInfo.electricityPhoto}');
+      print('   - environmentPhoto: ${debugPhotoInfo.environmentPhoto}');
+      print('   - frontSchoolPhoto: ${debugPhotoInfo.frontSchoolPhoto}');
+      print('   - classroomsPhoto: ${debugPhotoInfo.classroomsPhoto}');
+      print('   - kitchenPhoto: ${debugPhotoInfo.kitchenPhoto}');
+      print('   - diningRoomPhoto: ${debugPhotoInfo.diningRoomPhoto}');
+      print('   - additionalPhotos: ${debugPhotoInfo.additionalPhotos}');
+      
       // Obtener directorio temporal
       final tempDir = await getTemporaryDirectory();
       final timestamp = DateTime.now().millisecondsSinceEpoch;
@@ -174,14 +187,25 @@ class XmlExportService {
       final photoInfo = surveyState.photographicRecordInfo;
       final allPhotos = _getPhotosList(photoInfo);
       
+      print('📸 Procesando ${allPhotos.length} fotos para incluir en ZIP');
+      
       for (int i = 0; i < allPhotos.length; i++) {
         final photoPath = allPhotos[i];
+        if (photoPath.isEmpty) continue;
+        
         final photoFile = File(photoPath);
         
         if (await photoFile.exists()) {
-          final fileName = 'foto_${i + 1}_${photoFile.path.split('/').last}';
-          final targetFile = File('${photosDir.path}/$fileName');
-          await photoFile.copy(targetFile.path);
+          try {
+            final fileName = 'foto_${i + 1}_${photoFile.path.split(Platform.pathSeparator).last}';
+            final targetFile = File('${photosDir.path}/$fileName');
+            await photoFile.copy(targetFile.path);
+            print('✅ Foto copiada: $fileName');
+          } catch (e) {
+            print('❌ Error copiando foto ${photoFile.path}: $e');
+          }
+        } else {
+          print('⚠️ Foto no encontrada: $photoPath');
         }
       }
       
@@ -193,19 +217,37 @@ class XmlExportService {
       archive.addFile(ArchiveFile(xmlFile.path.split('/').last, xmlBytes.length, xmlBytes));
       
       // Agregar todas las fotos al ZIP
+      final photosInZip = <String>[];
       await for (final entity in photosDir.list(recursive: true)) {
         if (entity is File) {
-          final fileBytes = await entity.readAsBytes();
-          final relativePath = 'fotos/${entity.path.split('/').last}';
-          archive.addFile(ArchiveFile(relativePath, fileBytes.length, fileBytes));
+          try {
+            final fileBytes = await entity.readAsBytes();
+            final relativePath = 'fotos/${entity.path.split(Platform.pathSeparator).last}';
+            archive.addFile(ArchiveFile(relativePath, fileBytes.length, fileBytes));
+            photosInZip.add(relativePath);
+            print('✅ Foto agregada al ZIP: $relativePath');
+          } catch (e) {
+            print('❌ Error agregando foto al ZIP: ${entity.path} - $e');
+          }
         }
       }
+      
+      print('📦 Total de archivos en ZIP: ${archive.files.length}');
+      print('📸 Fotos incluidas en ZIP: ${photosInZip.length}');
       
       // Crear archivo ZIP final
       final zipPath = '${tempDir.path}/caracterizacion_${institutionName}_$timestamp.zip';
       final zipFile = File(zipPath);
       final zipData = ZipEncoder().encode(archive)!;
       await zipFile.writeAsBytes(zipData);
+      
+      // Información final del ZIP
+      print('📦 Archivo ZIP creado: ${zipFile.path}');
+      print('📊 Tamaño del archivo: ${getFileSize(zipFile)}');
+      print('📁 Archivos incluidos en el ZIP:');
+      for (var file in archive.files) {
+        print('   - ${file.name} (${file.size} bytes)');
+      }
       
       // Limpiar directorio temporal
       await packageDir.delete(recursive: true);
@@ -228,40 +270,38 @@ class XmlExportService {
   static List<String> _getPhotosList(PhotographicRecordInfo photoInfo) {
     final photos = <String>[];
     
-    if (photoInfo.generalPhoto != null && photoInfo.generalPhoto!.isNotEmpty) {
-      photos.add(photoInfo.generalPhoto!);
-    }
-    if (photoInfo.infrastructurePhoto != null && photoInfo.infrastructurePhoto!.isNotEmpty) {
-      photos.add(photoInfo.infrastructurePhoto!);
-    }
-    if (photoInfo.electricityPhoto != null && photoInfo.electricityPhoto!.isNotEmpty) {
-      photos.add(photoInfo.electricityPhoto!);
-    }
-    if (photoInfo.environmentPhoto != null && photoInfo.environmentPhoto!.isNotEmpty) {
-      photos.add(photoInfo.environmentPhoto!);
-    }
-    if (photoInfo.frontSchoolPhoto != null && photoInfo.frontSchoolPhoto!.isNotEmpty) {
-      photos.add(photoInfo.frontSchoolPhoto!);
-    }
-    if (photoInfo.classroomsPhoto != null && photoInfo.classroomsPhoto!.isNotEmpty) {
-      photos.add(photoInfo.classroomsPhoto!);
-    }
-    if (photoInfo.kitchenPhoto != null && photoInfo.kitchenPhoto!.isNotEmpty) {
-      photos.add(photoInfo.kitchenPhoto!);
-    }
-    if (photoInfo.diningRoomPhoto != null && photoInfo.diningRoomPhoto!.isNotEmpty) {
-      photos.add(photoInfo.diningRoomPhoto!);
+    // Helper para agregar foto si es válida
+    void addPhotoIfValid(String? photoPath) {
+      if (photoPath != null && photoPath.isNotEmpty && photoPath != 'null') {
+        photos.add(photoPath);
+      }
     }
     
+    addPhotoIfValid(photoInfo.generalPhoto);
+    addPhotoIfValid(photoInfo.infrastructurePhoto);
+    addPhotoIfValid(photoInfo.electricityPhoto);
+    addPhotoIfValid(photoInfo.environmentPhoto);
+    addPhotoIfValid(photoInfo.frontSchoolPhoto);
+    addPhotoIfValid(photoInfo.classroomsPhoto);
+    addPhotoIfValid(photoInfo.kitchenPhoto);
+    addPhotoIfValid(photoInfo.diningRoomPhoto);
+    
     // Si hay fotos adicionales (podrían ser múltiples separadas por comas)
-    if (photoInfo.additionalPhotos != null && photoInfo.additionalPhotos!.isNotEmpty) {
+    if (photoInfo.additionalPhotos != null && 
+        photoInfo.additionalPhotos!.isNotEmpty && 
+        photoInfo.additionalPhotos != 'null') {
       final additionalList = photoInfo.additionalPhotos!.split(',');
       for (final photo in additionalList) {
         final trimmed = photo.trim();
-        if (trimmed.isNotEmpty) {
+        if (trimmed.isNotEmpty && trimmed != 'null') {
           photos.add(trimmed);
         }
       }
+    }
+    
+    print('📋 Fotos encontradas en el registro: ${photos.length}');
+    for (int i = 0; i < photos.length; i++) {
+      print('   ${i + 1}. ${photos[i]}');
     }
     
     return photos;

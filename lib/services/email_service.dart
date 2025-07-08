@@ -2,7 +2,6 @@ import 'dart:io';
 import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:path_provider/path_provider.dart';
 import '../models/survey_state.dart';
 import '../config/email_config.dart';
 
@@ -78,43 +77,7 @@ class EmailService {
       print('Error compartiendo archivo: $e');
     }
   }
-  
-  /// Copia el archivo ZIP a una ubicación accesible (Descargas)
-  static Future<File?> copyToDownloads(File zipFile, {String? institutionName}) async {
-    try {
-      // Para Android, intentamos usar el directorio de Descargas
-      Directory? targetDir;
-      
-      if (Platform.isAndroid) {
-        // En Android, usamos getExternalStorageDirectory
-        final externalDir = await getExternalStorageDirectory();
-        if (externalDir != null) {
-          targetDir = Directory('${externalDir.path}/Download');
-          if (!await targetDir.exists()) {
-            await targetDir.create(recursive: true);
-          }
-        }
-      } else if (Platform.isIOS) {
-        // En iOS, usamos el directorio de documentos de la aplicación
-        targetDir = await getApplicationDocumentsDirectory();
-      }
-      
-      targetDir ??= await getApplicationDocumentsDirectory();
-      
-      final timestamp = DateTime.now().millisecondsSinceEpoch;
-      final institutionNameClean = institutionName?.replaceAll(' ', '_').replaceAll(RegExp(r'[^\w\-_]'), '') ?? 'sede';
-      final fileName = 'caracterizacion_${institutionNameClean}_$timestamp.zip';
-      final targetFile = File('${targetDir.path}/$fileName');
-      
-      await zipFile.copy(targetFile.path);
-      print('Archivo copiado a: ${targetFile.path}');
-      return targetFile;
-    } catch (e) {
-      print('Error copiando archivo: $e');
-      return null;
-    }
-  }
-  
+
   /// Genera el cuerpo del correo en texto plano
   static String _generateEmailBody(String? institutionName, String? municipio) {
     return '''
