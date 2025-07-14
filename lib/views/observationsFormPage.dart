@@ -264,14 +264,18 @@ class _ObservationsFormPageState extends State<ObservationsFormPage> {
       // Programar para sincronización automática con el nuevo servicio
       await AutoSyncService.scheduleImmediateSync(surveyData);
       
-      Navigator.of(context).pop(); // Cerrar loading
-      
-      // Mostrar confirmación con información sobre el envío automático
-      _showAutomaticSyncConfirmation();
+      if (mounted) {
+        Navigator.of(context).pop(); // Cerrar loading
+        
+        // Mostrar confirmación con información sobre el envío automático
+        _showAutomaticSyncConfirmation();
+      }
       
     } catch (e) {
-      Navigator.of(context).pop(); // Cerrar loading
-      _showErrorDialog('Error programando envío automático: $e');
+      if (mounted) {
+        Navigator.of(context).pop(); // Cerrar loading
+        _showErrorDialog('Error programando envío automático: $e');
+      }
     }
   }
   

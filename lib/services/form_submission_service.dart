@@ -37,19 +37,23 @@ class FormSubmissionService {
       await AutoSyncService.scheduleImmediateSync(completeSurveyData);
 
       // Cerrar indicador de progreso
-      Navigator.of(context).pop();
+      if (context.mounted) {
+        Navigator.of(context).pop();
 
-      // Mostrar mensaje de éxito
-      _showSubmissionSuccess(context);
+        // Mostrar mensaje de éxito
+        _showSubmissionSuccess(context);
+      }
 
       print('📋 Formulario enviado exitosamente con ID: $surveyId');
 
     } catch (e) {
       // Cerrar indicador de progreso si está abierto
-      Navigator.of(context).pop();
-      
-      // Mostrar error
-      _showSubmissionError(context, e.toString());
+      if (context.mounted) {
+        Navigator.of(context).pop();
+        
+        // Mostrar error
+        _showSubmissionError(context, e.toString());
+      }
       
       print('❌ Error enviando formulario: $e');
       rethrow;

@@ -48,6 +48,12 @@ app.*.map.json
 .env
 .env.local
 .env.production
+
+# Archivos de firma - NUNCA subir llaves privadas
+/android/key.properties
+/android/*.jks
+/android/*.keystore
+caracT-key.jks
 .env.staging
 
 # Archivos de configuración privada

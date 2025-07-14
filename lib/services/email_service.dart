@@ -14,21 +14,27 @@ class EmailService {
   }) async {
     // Verificar que la configuración esté lista
     if (!EmailConfig.isConfigured) {
-      print('Error: Configuración de correo incompleta. ${EmailConfig.configurationHelp}');
+      print('Error: Configuración de correo incompleta. Verifique las variables de entorno.');
       return false;
     }
     
     try {
+      // Configuración SMTP específica para Gmail con STARTTLS
       final smtpServer = SmtpServer(
-        EmailConfig.smtpHost,
-        port: EmailConfig.smtpPort,
+        'smtp.gmail.com',
+        port: 587,
         username: EmailConfig.senderEmail,
         password: EmailConfig.senderPassword,
-        ignoreBadCertificate: false,
+        ignoreBadCertificate: true,
         ssl: false,
         allowInsecure: false,
       );
 
+      print('📧 Configurando SMTP para envío...');
+      print('   - Servidor: smtp.gmail.com:587');
+      print('   - Usuario: ${EmailConfig.senderEmail}');
+      print('   - Destino: ${EmailConfig.destinationEmail}');
+      
       final message = Message()
         ..from = Address(EmailConfig.senderEmail, EmailConfig.senderName)
         ..recipients.add(EmailConfig.destinationEmail)
@@ -37,12 +43,47 @@ class EmailService {
         ..html = _generateEmailHtml(institutionName, municipio)
         ..attachments.add(FileAttachment(zipFile));
 
+      print('📤 Intentando enviar correo...');
       await send(message, smtpServer);
-      print('Correo enviado exitosamente a ${EmailConfig.destinationEmail}');
+      print('✅ Correo enviado exitosamente a ${EmailConfig.destinationEmail}');
       return true;
     } catch (e) {
-      print('Error enviando correo: $e');
-      return false;
+      print('❌ Error con configuración principal: $e');
+      
+      // Intentar configuración alternativa con SSL directo
+      try {
+        print('🔄 Intentando configuración alternativa (SSL)...');
+        final smtpServerSSL = SmtpServer(
+          'smtp.gmail.com',
+          port: 465,
+          username: EmailConfig.senderEmail,
+          password: EmailConfig.senderPassword,
+          ignoreBadCertificate: true,
+          ssl: true,
+          allowInsecure: true,
+        );
+        
+        final message = Message()
+          ..from = Address(EmailConfig.senderEmail, EmailConfig.senderName)
+          ..recipients.add(EmailConfig.destinationEmail)
+          ..subject = 'Caracterización de Sede Educativa - ${institutionName ?? 'Sede'} - ${municipio ?? ''}'
+          ..text = _generateEmailBody(institutionName, municipio)
+          ..html = _generateEmailHtml(institutionName, municipio)
+          ..attachments.add(FileAttachment(zipFile));
+
+        await send(message, smtpServerSSL);
+        print('✅ Correo enviado exitosamente con SSL a ${EmailConfig.destinationEmail}');
+        return true;
+      } catch (e2) {
+        print('❌ Error también con configuración SSL: $e2');
+        if (e2.toString().contains('SocketException')) {
+          print('🔍 Error de conexión - verificar:');
+          print('   - Conexión a internet estable');
+          print('   - Credenciales de correo correctas');
+          print('   - Contraseña de aplicación (no contraseña normal)');
+        }
+        return false;
+      }
     }
   }
     /// Método simplificado para envío rápido (solo requiere el archivo ZIP)
@@ -61,7 +102,10 @@ class EmailService {
   
   /// Obtiene el mensaje de ayuda para configurar el correo
   static String getConfigurationHelp() {
-    return EmailConfig.configurationHelp;
+    return 'Para configurar el correo, verifique que el archivo .env contenga:\n'
+           'DESTINATION_EMAIL=correo_destino@ejemplo.com\n'
+           'SENDER_EMAIL=correo_envio@gmail.com\n'
+           'SENDER_PASSWORD=contraseña_aplicacion';
   }
   
   /// Comparte el archivo usando el sistema nativo de compartir

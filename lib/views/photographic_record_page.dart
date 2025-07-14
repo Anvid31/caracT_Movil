@@ -45,8 +45,10 @@ class _PhotographicRecordPageState extends State<PhotographicRecordPage> {
   Future<void> _saveData() async {
     try {
       await StorageService.savePhotographicRecordInfo(_photographicRecordInfo);
-      Provider.of<SurveyState>(context, listen: false)
-          .updatePhotographicRecordInfo(_photographicRecordInfo);
+      if (mounted) {
+        Provider.of<SurveyState>(context, listen: false)
+            .updatePhotographicRecordInfo(_photographicRecordInfo);
+      }
     } catch (e) {
       print('Error al guardar datos del registro fotográfico: $e');
     }

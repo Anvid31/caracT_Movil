@@ -9,7 +9,6 @@ import '../widgets/layout/enhanced_form_container.dart';
 import '../utils/form_navigator.dart';
 import '../utils/location_data.dart';
 import 'institutionalFormPage.dart';
-import 'auto_sync_test_page.dart';
 
 class SurveyFormPage extends StatefulWidget {
   const SurveyFormPage({super.key});
@@ -43,6 +42,7 @@ class _SurveyFormPageState extends State<SurveyFormPage> {
       }
     });
   }
+
   @override
   Widget build(BuildContext context) {
     return EnhancedFormContainer(
@@ -52,18 +52,6 @@ class _SurveyFormPageState extends State<SurveyFormPage> {
       onNext: _submitForm,
       showPrevious: false,
       transitionType: FormTransitionType.slideScale,
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => const AutoSyncTestPage(),
-            ),
-          );
-        },
-        backgroundColor: const Color(0xFF2196F3),
-        tooltip: 'Probar Sincronización Automática',
-        child: const Icon(Icons.sync, color: Colors.white),
-      ),
       child: SingleChildScrollView(
         physics: const ClampingScrollPhysics(),
         child: Padding(

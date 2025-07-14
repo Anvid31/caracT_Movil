@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../../config/theme.dart';
 
 class CustomNumberField extends StatelessWidget {
   final String label;
@@ -28,9 +27,13 @@ class CustomNumberField extends StatelessWidget {
         inputFormatters: [
           FilteringTextInputFormatter.digitsOnly,
         ],
-        decoration: AppTheme.inputDecoration.copyWith(
+        decoration: InputDecoration(
           labelText: label,
           suffixText: suffix,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         ),          validator: (value) {
           if (value == null || value.isEmpty) {
             return 'Este campo es requerido';

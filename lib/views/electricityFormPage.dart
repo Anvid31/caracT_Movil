@@ -58,7 +58,7 @@ class _ElectricityFormPageState extends State<ElectricityFormPage> {
                 children: [
                   Icon(Icons.warning, color: Colors.white),
                   SizedBox(width: 8),
-                  Text('Por favor, responda si la sede cuenta con servicio eléctrico'),
+                  Text('Por favor, responda si la sede cuenta con servicio'),
                 ],
               ),
               backgroundColor: Colors.orange.shade600,
@@ -81,7 +81,7 @@ class _ElectricityFormPageState extends State<ElectricityFormPage> {
                 children: [
                   Icon(Icons.warning, color: Colors.white),
                   SizedBox(width: 8),
-                  Text('Por favor, indique de qué manera recibe servicio eléctrico'),
+                  Text('Por favor, indique de qué manera recibe servicio'),
                 ],
               ),
               backgroundColor: Colors.orange.shade600,
@@ -125,7 +125,7 @@ class _ElectricityFormPageState extends State<ElectricityFormPage> {
                 children: [
                   Icon(Icons.warning, color: Colors.white),
                   SizedBox(width: 8),
-                  Text('Por favor, responda sobre el interés en paneles solares'),
+                  Text('Por favor, responda sobre el interés en paneles'),
                 ],
               ),
               backgroundColor: Colors.orange.shade600,

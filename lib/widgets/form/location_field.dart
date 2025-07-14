@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../config/theme.dart';
 import '../../services/location_service.dart';
 
 
@@ -86,7 +85,11 @@ class _LocationFieldState extends State<LocationField> {
           ),
           TextFormField(
             controller: _controller,
-            decoration: AppTheme.inputDecoration.copyWith(
+            decoration: InputDecoration(
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               suffixIcon: _isLoading
                   ? const SizedBox(
                       width: 24,

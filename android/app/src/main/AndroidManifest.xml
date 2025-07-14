@@ -34,9 +34,9 @@
                   android:required="false" />
     
     <application
-        android:label="caracterizacion_cens"
+        android:label="CaracT Móvil"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/launcher_icon"
         android:enableOnBackInvokedCallback="true"
         android:requestLegacyExternalStorage="true">
         <activity
